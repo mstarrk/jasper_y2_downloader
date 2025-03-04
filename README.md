@@ -1,6 +1,6 @@
 # Jasper
 
-![image](https://github.com/user-attachments/assets/f02cfa0b-fcde-4ce1-a104-a139de799a3c)
+<img src="https://github.com/user-attachments/assets/f02cfa0b-fcde-4ce1-a104-a139de799a3c" width="400" alt="Jasper Y2 Downloader Screenshot">
 
 Jasper Y2 Downloader is a simple YouTube to MP3 downloader built with **Electron**. It listens for YouTube links copied to the clipboard, provides a notification prompt, and allows easy one-click downloads for individual videos or entire playlists.
 
