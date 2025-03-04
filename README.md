@@ -1,13 +1,15 @@
-# Jasper Y2 Downloader
+# Jasper
 
-Jasper Y2 Downloader is a simple and efficient YouTube to MP3 downloader built with **Electron**. It listens for YouTube links copied to the clipboard, provides a notification prompt, and allows easy one-click downloads for individual videos or entire playlists.
+![image](https://github.com/user-attachments/assets/f02cfa0b-fcde-4ce1-a104-a139de799a3c)
+
+Jasper Y2 Downloader is a simple YouTube to MP3 downloader built with **Electron**. It listens for YouTube links copied to the clipboard, provides a notification prompt, and allows easy one-click downloads for individual videos or entire playlists.
 
 ## Features
 
 - **Automatic Clipboard Detection** – Detects YouTube links copied to the clipboard and prompts for download.
 - **Download YouTube Videos as MP3** – Extracts audio from videos and saves it in high-quality MP3 format.
 - **Batch Playlist Downloading** – Supports downloading entire YouTube playlists.
-- **Download Queue and Progress Bar** – Tracks ongoing downloads with a UI queue and progress indicators.
+- **Download Queue** – Tracks ongoing downloads with a UI queue and progress indicators.
 - **Pause and Resume Downloads** – Allows pausing and resuming downloads as needed.
 - **Custom File Naming** – Saves MP3 files using the actual video title.
 - **System Notifications** – Alerts when a download starts and completes.
@@ -16,12 +18,12 @@ Jasper Y2 Downloader is a simple and efficient YouTube to MP3 downloader built w
 
 ### Prerequisites
 
-Ensure you have **Node.js** and **npm** installed on your system.
+You need **Node.js** and **npm** installed on your system.
 
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/yourusername/jasper_y2_downloader.git
+git clone https://github.com/mstarrk/jasper_y2_downloader.git
 cd jasper_y2_downloader
 ```
 
