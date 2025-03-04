@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasper Y2 Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+        }
+
+        .download-item {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ccc;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .progress {
+            height: 10px;
+            background: green;
+            width: 0%;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Download YouTube MP3</h3>
+    <p id="url">Waiting for link...</p>
+    <button id="download-btn" disabled>Download</button>
+    <div id="download-queue"></div>
+
+    <script>
+        const urlElement = document.getElementById('url');
+        const downloadBtn = document.getElementById('download-btn');
+        const queueElement = document.getElementById('download-queue');
+
+        window.electron.onUrlDetected((url) => {
+            urlElement.textContent = url;
+            downloadBtn.disabled = false;
+            downloadBtn.onclick = async () => {
+                const title = await window.electron.getVideoTitle(url);
+                addDownloadItem(title, url);
+                window.electron.download(url);
+                downloadBtn.disabled = true;
+            };
+        });
+
+        function addDownloadItem(title, url) {
+            if (document.getElementById(`progress-${url}`)) return; // Prevent duplicate entries
+
+            const item = document.createElement('div');
+            item.classList.add('download-item');
+            item.innerHTML = `
+                <p>${title}</p>
+                <div class="progress-bar"><div class="progress" id="progress-${url}"></div></div>
+                <button onclick="pauseDownload('${url}')">Pause</button>
+                <button onclick="resumeDownload('${url}')">Resume</button>
+            `;
+            queueElement.appendChild(item);
+        }
+
+        function pauseDownload(url) {
+            window.electron.pauseDownload(url);
+        }
+
+        function resumeDownload(url) {
+            window.electron.resumeDownload(url);
+        }
+
+        window.electron.onDownloadProgress((url, percent) => {
+            const progressBar = document.getElementById(`progress-${url}`);
+            if (progressBar) {
+                progressBar.style.width = percent + '%';
+            }
+        });
+    </script>
+</body>
+
+</html>
