@@ -1,91 +1,1102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jasper Y2 Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+        :root {
+            --primary-color: #ff0000;
+            --secondary-color: #f5f5f5;
+            --accent-color: #ff4d4d;
+            --text-color: #333;
+            --light-text: #fff;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --queue-bg: #f9f9f9;
+            --border-color: #eee;
+            --download-item-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
-        button {
-            padding: 10px 20px;
-            margin: 10px;
+        [data-theme="dark"] {
+            --primary-color: #ff5252;
+            --secondary-color: #2d2d30;
+            --accent-color: #ff7070;
+            --text-color: #e1e1e1;
+            --light-text: #f5f5f5;
+            --bg-color: #1e1e1e;
+            --card-bg: #252526;
+            --queue-bg: #2d2d30;
+            --border-color: #333;
+            --download-item-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            background-color: var(--card-bg);
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-controls {
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .theme-toggle,
+        .settings-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover,
+        .settings-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .app-title h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .app-title i {
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .download-section {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .url-display {
+            background-color: var(--card-bg);
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            min-height: 45px;
+            width: 100%;
+            color: var(--text-color);
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        .url-display:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+        }
+
+        .url-display::placeholder {
+            color: var(--text-color);
+            opacity: 0.5;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .download-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        .download-btn:disabled {
+            background-color: #777;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .queue-section {
+            margin-top: 25px;
+        }
+
+        .queue-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .no-downloads {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-color);
+            opacity: 0.6;
+            font-style: italic;
         }
 
         .download-item {
-            margin-top: 10px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--download-item-shadow);
+            transition: var(--transition);
+        }
+
+        .download-item:hover {
+            box-shadow: var(--box-shadow);
+        }
+
+        .download-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+            word-break: break-word;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0 15px;
         }
 
         .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: #ccc;
-            margin-top: 5px;
-            position: relative;
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
         }
 
-        .progress {
-            height: 10px;
-            background: green;
-            width: 0%;
+        .download-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .pause-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .pause-btn:hover {
+            opacity: 0.9;
+        }
+
+        .resume-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .resume-btn:hover {
+            background-color: #45a049;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .download-status {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .percentage {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .download-complete {
+            border-left: 4px solid #4caf50;
+        }
+
+        .download-complete .progress-bar {
+            background: #4caf50;
+        }
+
+        .download-error {
+            border-left: 4px solid #f44336;
+        }
+
+        .download-error .progress-bar {
+            background: #f44336;
+        }
+
+        .download-paused .status-text {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        .playlist-item {
+            border-left: 4px solid #2196F3;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .settings-content {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .settings-header h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-group h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .settings-option {
+            margin-bottom: 15px;
+        }
+
+        .settings-option label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .settings-option select,
+        .settings-option input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .save-settings {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .save-settings:hover {
+            background-color: var(--accent-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .debug-output {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .debug-log {
+            margin-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .debug-log.error {
+            color: #f44336;
+        }
+
+        .debug-log.warning {
+            color: #ff9800;
+        }
+
+        .debug-log.success {
+            color: #4caf50;
+        }
+
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 15px;
+            }
+
+            .download-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h3>Download YouTube MP3</h3>
-    <p id="url">Waiting for link...</p>
-    <button id="download-btn" disabled>Download</button>
-    <div id="download-queue"></div>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="app-controls">
+                <button class="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="theme-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="app-title">
+                <i class="fas fa-music"></i>
+                <h1>Jasper Y2 Downloader</h1>
+            </div>
+            <div class="app-subtitle">Simple YouTube to MP3 converter</div>
+        </div>
+
+        <div class="download-section">
+            <input type="text" id="url" class="url-display"
+                placeholder="Paste YouTube URL here or wait for automatic detection..." />
+            <button id="download-btn" class="download-btn" disabled>
+                <i class="fas fa-download"></i> Download
+            </button>
+        </div>
+
+        <div class="queue-section">
+            <div class="queue-header">
+                <i class="fas fa-list"></i> Download Queue
+            </div>
+            <div id="download-queue">
+                <div class="no-downloads">No downloads in queue</div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settings-modal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Settings</h2>
+                    <button class="close-settings" id="close-settings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="settings-group">
+                    <h3>Appearance</h3>
+                    <div class="settings-option">
+                        <label for="theme-select">Theme</label>
+                        <select id="theme-select">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="system">System Default</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>Download Options</h3>
+                    <div class="settings-option">
+                        <label for="quality-select">Audio Quality</label>
+                        <select id="quality-select">
+                            <option value="highestaudio">Highest (256kbps+)</option>
+                            <option value="lowestaudio">Lowest (128kbps)</option>
+                        </select>
+                    </div>
+                    <div class="settings-option">
+                        <label for="output-dir">Download Folder</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="output-dir" placeholder="Default Downloads folder" readonly>
+                            <button id="select-dir-btn" class="action-btn pause-btn">
+                                <i class="fas fa-folder-open"></i> Browse
+                            </button>
+                        </div>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">Click Browse to change the
+                            download location</small>
+                    </div>
+                </div>
+                <button class="save-settings" id="save-settings">Save Settings</button>
+            </div>
+        </div>
+
+        <!-- Debug output section - set to hidden by default -->
+        <div class="debug-output hidden">
+            <h3>Debug Console</h3>
+            <div id="debug-logs"></div>
+        </div>
+    </div>
 
     <script>
+        // App settings with defaults
+        const appSettings = {
+            theme: localStorage.getItem('theme') || 'light',
+            quality: localStorage.getItem('quality') || 'highestaudio',
+            outputDir: localStorage.getItem('outputDir') || ''
+        };
+
+        // Debug functions - only visible when debug mode is enabled
+        function debugLog(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+
+            const debugLogs = document.getElementById('debug-logs');
+            const debugOutput = document.querySelector('.debug-output');
+
+            // Only add to UI if debug mode is enabled (element is visible)
+            if (debugLogs && !debugOutput.classList.contains('hidden')) {
+                const logEntry = document.createElement('div');
+                logEntry.classList.add('debug-log');
+                logEntry.classList.add(type);
+                logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                debugLogs.appendChild(logEntry);
+
+                // Auto-scroll to bottom
+                debugLogs.scrollTop = debugLogs.scrollHeight;
+            }
+        }
+
+        // DOM Elements
         const urlElement = document.getElementById('url');
         const downloadBtn = document.getElementById('download-btn');
         const queueElement = document.getElementById('download-queue');
+        const themeToggle = document.querySelector('.theme-toggle');
+        const settingsBtn = document.querySelector('.settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const saveSettings = document.getElementById('save-settings');
+        const themeSelect = document.getElementById('theme-select');
+        const qualitySelect = document.getElementById('quality-select');
+        const outputDirInput = document.getElementById('output-dir');
+        const selectDirBtn = document.getElementById('select-dir-btn');
 
-        window.electron.onUrlDetected((url) => {
-            urlElement.textContent = url;
-            downloadBtn.disabled = false;
-            downloadBtn.onclick = async () => {
-                const title = await window.electron.getVideoTitle(url);
-                addDownloadItem(title, url);
-                window.electron.download(url);
-                downloadBtn.disabled = true;
-            };
+        // Store download items by URL
+        const downloadItems = new Map();
+
+        // Apply saved settings
+        function applySettings() {
+            // Apply theme
+            document.documentElement.setAttribute('data-theme', appSettings.theme);
+            themeSelect.value = appSettings.theme;
+
+            // Update theme toggle icon
+            updateThemeIcon();
+
+            // Apply quality setting
+            qualitySelect.value = appSettings.quality;
+
+            // Apply output directory setting
+            if (appSettings.outputDir) {
+                outputDirInput.value = appSettings.outputDir;
+                // Apply the saved directory in the main process
+                window.electron.setOutputDir(appSettings.outputDir);
+            } else {
+                // Get the default directory
+                window.electron.getOutputDir().then(dir => {
+                    outputDirInput.value = dir;
+                });
+            }
+
+            // Set up directory selection
+            selectDirBtn.addEventListener('click', async () => {
+                try {
+                    const dir = await window.electron.selectDirectory();
+                    if (dir) {
+                        outputDirInput.value = dir;
+                        appSettings.outputDir = dir;
+                        localStorage.setItem('outputDir', dir);
+                        window.electron.setOutputDir(dir);
+                    }
+                } catch (error) {
+                    debugLog(`Error selecting directory: ${error}`, 'error');
+                }
+            });
+        }
+
+        // Update theme toggle icon based on current theme
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            appSettings.theme = newTheme;
+            localStorage.setItem('theme', newTheme);
+
+            updateThemeIcon();
         });
 
-        function addDownloadItem(title, url) {
-            if (document.getElementById(`progress-${url}`)) return; // Prevent duplicate entries
+        // Settings modal controls
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
 
+        closeSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+
+        saveSettings.addEventListener('click', () => {
+            // Save theme setting
+            appSettings.theme = themeSelect.value;
+            localStorage.setItem('theme', appSettings.theme);
+
+            // Save quality setting
+            appSettings.quality = qualitySelect.value;
+            localStorage.setItem('quality', appSettings.quality);
+
+            // Save output directory setting
+            appSettings.outputDir = outputDirInput.value;
+            localStorage.setItem('outputDir', appSettings.outputDir);
+            window.electron.setOutputDir(appSettings.outputDir);
+
+            // Apply settings
+            applySettings();
+
+            // Close modal
+            settingsModal.classList.remove('active');
+
+            debugLog('Settings saved', 'success');
+        });
+
+        // Safe ID generator for URLs
+        function getSafeId(url) {
+            return url.replace(/[^a-zA-Z0-9]/g, '_');
+        }
+
+        // Initialize app
+        function initApp() {
+            debugLog('Initializing application...', 'info');
+
+            // Apply saved settings
+            applySettings();
+
+            // Set up event listeners for the URL input
+            urlElement.addEventListener('input', () => {
+                const url = urlElement.value.trim();
+
+                // Enable download button if the URL looks like a YouTube URL
+                if (isYouTubeUrl(url)) {
+                    downloadBtn.disabled = false;
+                    debugLog(`Valid YouTube URL detected in input: ${url}`, 'info');
+                } else {
+                    downloadBtn.disabled = true;
+                }
+            });
+
+            // Also handle paste events
+            urlElement.addEventListener('paste', () => {
+                // Small timeout to allow the paste to complete
+                setTimeout(() => {
+                    const url = urlElement.value.trim();
+                    if (isYouTubeUrl(url)) {
+                        downloadBtn.disabled = false;
+                        debugLog(`Valid YouTube URL pasted: ${url}`, 'info');
+                    }
+                }, 100);
+            });
+
+            // Function to check if a URL looks like a YouTube URL
+            function isYouTubeUrl(url) {
+                return url.includes('youtube.com/') || url.includes('youtu.be/');
+            }
+
+            // Set up event listeners for the download button
+            downloadBtn.addEventListener('click', () => {
+                const url = urlElement.value.trim();
+                if (url && isYouTubeUrl(url)) {
+                    try {
+                        debugLog(`Download button clicked for URL: ${url}`, 'info');
+
+                        downloadBtn.disabled = true;
+                        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                        // Start the download with current quality setting
+                        debugLog(`Starting download with quality: ${appSettings.quality}`, 'info');
+                        window.electron.download(url, appSettings.quality);
+
+                        // Reset the URL input after starting
+                        setTimeout(() => {
+                            urlElement.value = "";
+                            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+                            downloadBtn.disabled = true;
+                        }, 1500);
+                    } catch (error) {
+                        debugLog(`Error starting download: ${error}`, 'error');
+                        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+                        downloadBtn.disabled = false;
+                    }
+                }
+            });
+
+            // Update queue display
+            updateQueueDisplay();
+
+            // Set up all the event handlers
+            setupEventHandlers();
+
+            debugLog('Application initialized', 'success');
+        }
+
+        // Update queue display
+        function updateQueueDisplay() {
+            debugLog(`Updating queue display. Items in queue: ${downloadItems.size}`, 'info');
+
+            if (downloadItems.size === 0) {
+                if (!queueElement.querySelector('.no-downloads')) {
+                    queueElement.innerHTML = '<div class="no-downloads">No downloads in queue</div>';
+                }
+            } else {
+                const noDownloadsMsg = queueElement.querySelector('.no-downloads');
+                if (noDownloadsMsg) {
+                    noDownloadsMsg.remove();
+                }
+            }
+        }
+
+        // Set up event handlers for IPC events
+        function setupEventHandlers() {
+            debugLog('Setting up event handlers', 'info');
+
+            // URL detected in clipboard
+            window.electron.onUrlDetected((url) => {
+                debugLog(`URL detected in clipboard: ${url}`, 'info');
+                urlElement.value = url;
+                urlElement.title = url; // For tooltip on hover
+                downloadBtn.disabled = false;
+            });
+
+            // Download started
+            window.electron.onDownloadStarted((url, title) => {
+                debugLog(`Download started: ${url}, Title: ${title}`, 'info');
+                addDownloadItem(url, title);
+            });
+
+            // Download progress
+            window.electron.onDownloadProgress((url, percent) => {
+                debugLog(`Download progress: ${url}, ${percent}%`, 'info');
+                updateDownloadProgress(url, percent);
+            });
+
+            // Download complete
+            window.electron.onDownloadComplete((url) => {
+                debugLog(`Download complete: ${url}`, 'success');
+                downloadComplete(url);
+            });
+
+            // Download error
+            window.electron.onDownloadError((url, error) => {
+                debugLog(`Download error: ${url}, ${error}`, 'error');
+                downloadError(url, error);
+            });
+
+            // Download paused
+            window.electron.onDownloadPaused((url) => {
+                debugLog(`Download paused: ${url}`, 'info');
+                downloadPaused(url);
+            });
+
+            // Download resumed
+            window.electron.onDownloadResumed((url) => {
+                debugLog(`Download resumed: ${url}`, 'info');
+                downloadResumed(url);
+            });
+
+            // Download cancelled
+            window.electron.onDownloadCancelled((url) => {
+                debugLog(`Download cancelled: ${url}`, 'warning');
+                downloadCancelled(url);
+            });
+
+            debugLog('All event handlers set up', 'success');
+        }
+
+        // Add a download item to the queue
+        function addDownloadItem(url, title) {
+            debugLog(`Adding download item: ${url}, "${title}"`, 'info');
+
+            // Create a safe ID for DOM elements
+            const safeId = getSafeId(url);
+
+            // Check if this URL is already in the queue
+            if (downloadItems.has(url)) {
+                debugLog(`Item already exists in queue: ${url}`, 'warning');
+                return; // Prevent duplicate entries
+            }
+
+            // Remove "no downloads" message if it exists
+            const noDownloadsMsg = queueElement.querySelector('.no-downloads');
+            if (noDownloadsMsg) {
+                noDownloadsMsg.remove();
+            }
+
+            // Create download item element
             const item = document.createElement('div');
             item.classList.add('download-item');
-            item.innerHTML = `
-                <p>${title}</p>
-                <div class="progress-bar"><div class="progress" id="progress-${url}"></div></div>
-                <button onclick="pauseDownload('${url}')">Pause</button>
-                <button onclick="resumeDownload('${url}')">Resume</button>
-            `;
-            queueElement.appendChild(item);
-        }
+            item.id = `download-${safeId}`;
 
-        function pauseDownload(url) {
-            window.electron.pauseDownload(url);
-        }
-
-        function resumeDownload(url) {
-            window.electron.resumeDownload(url);
-        }
-
-        window.electron.onDownloadProgress((url, percent) => {
-            const progressBar = document.getElementById(`progress-${url}`);
-            if (progressBar) {
-                progressBar.style.width = percent + '%';
+            // If it's a playlist, add special styling
+            if (title.includes('Playlist:')) {
+                item.classList.add('playlist-item');
+                debugLog('Added playlist styling', 'info');
             }
+
+            item.innerHTML = `
+                <div class="download-title">${title}</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-${safeId}"></div>
+                </div>
+                <div class="download-status">
+                    <span>Status: <span class="status-text" id="status-${safeId}">Downloading...</span></span>
+                    <span class="percentage" id="percent-${safeId}">0%</span>
+                </div>
+                <div class="download-actions" id="actions-${safeId}">
+                    <button class="action-btn pause-btn" id="pause-${safeId}">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="action-btn resume-btn" id="resume-${safeId}">
+                        <i class="fas fa-play"></i> Resume
+                    </button>
+                    <button class="action-btn cancel-btn" id="cancel-${safeId}">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div class="error-message" id="error-${safeId}" style="display: none;"></div>
+            `;
+
+            // Add to the beginning of the queue
+            queueElement.insertBefore(item, queueElement.firstChild);
+            debugLog('Added item to DOM', 'info');
+
+            // Add event listeners for the buttons
+            document.getElementById(`pause-${safeId}`).addEventListener('click', () => {
+                debugLog(`Pause button clicked for: ${url}`, 'info');
+                window.electron.pauseDownload(url);
+            });
+
+            document.getElementById(`resume-${safeId}`).addEventListener('click', () => {
+                debugLog(`Resume button clicked for: ${url}`, 'info');
+                window.electron.resumeDownload(url);
+            });
+
+            document.getElementById(`cancel-${safeId}`).addEventListener('click', () => {
+                debugLog(`Cancel button clicked for: ${url}`, 'info');
+                window.electron.cancelDownload(url);
+            });
+
+            // Store reference to this download item
+            downloadItems.set(url, {
+                element: item,
+                title: title,
+                progress: 0,
+                status: 'downloading'
+            });
+
+            debugLog(`Download item added to queue: ${title}`, 'success');
+        }
+
+        // Update progress for a download
+        function updateDownloadProgress(url, percent) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot update progress: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const safeId = getSafeId(url);
+            const progressBar = document.getElementById(`progress-${safeId}`);
+            const percentText = document.getElementById(`percent-${safeId}`);
+
+            if (progressBar && percentText) {
+                progressBar.style.width = percent + '%';
+                percentText.textContent = percent + '%';
+
+                // Update stored progress
+                downloadItems.get(url).progress = percent;
+
+                // If download is complete
+                if (percent === 100) {
+                    downloadComplete(url);
+                }
+            } else {
+                debugLog(`Progress elements not found for: ${url}`, 'warning');
+            }
+        }
+
+        // Mark a download as complete
+        function downloadComplete(url) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot mark as complete: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const safeId = getSafeId(url);
+            const downloadItem = downloadItems.get(url);
+            const statusText = document.getElementById(`status-${safeId}`);
+            const actionsContainer = document.getElementById(`actions-${safeId}`);
+
+            // Add complete class
+            downloadItem.element.classList.add('download-complete');
+            downloadItem.status = 'complete';
+
+            // Update status text
+            if (statusText) {
+                statusText.textContent = 'Complete';
+            }
+
+            // Hide action buttons for completed downloads
+            if (actionsContainer) {
+                actionsContainer.innerHTML = ''; // Remove all buttons
+            }
+
+            debugLog(`Download marked as complete: ${downloadItem.title}`, 'success');
+        }
+
+        // Mark a download as error
+        function downloadError(url, errorMessage) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot mark as error: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const safeId = getSafeId(url);
+            const downloadItem = downloadItems.get(url);
+            const statusText = document.getElementById(`status-${safeId}`);
+            const errorElement = document.getElementById(`error-${safeId}`);
+            const actionsContainer = document.getElementById(`actions-${safeId}`);
+
+            downloadItem.element.classList.add('download-error');
+            downloadItem.status = 'error';
+
+            if (statusText) {
+                statusText.textContent = 'Failed';
+            }
+
+            if (errorElement) {
+                errorElement.textContent = errorMessage || 'Download failed';
+                errorElement.style.display = 'block';
+            }
+
+            // Hide action buttons except for retry
+            if (actionsContainer) {
+                actionsContainer.innerHTML = `
+                    <button class="action-btn cancel-btn" onclick="window.electron.cancelDownload('${url}')">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                `;
+            }
+
+            debugLog(`Download marked as error: ${downloadItem.title} - ${errorMessage}`, 'error');
+        }
+
+        // Mark a download as paused
+        function downloadPaused(url) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot mark as paused: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const safeId = getSafeId(url);
+            const downloadItem = downloadItems.get(url);
+            const statusText = document.getElementById(`status-${safeId}`);
+
+            downloadItem.element.classList.add('download-paused');
+            downloadItem.status = 'paused';
+
+            if (statusText) {
+                statusText.textContent = 'Paused';
+            }
+
+            debugLog(`Download marked as paused: ${downloadItem.title}`, 'info');
+        }
+
+        // Mark a download as resumed
+        function downloadResumed(url) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot mark as resumed: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const safeId = getSafeId(url);
+            const downloadItem = downloadItems.get(url);
+            const statusText = document.getElementById(`status-${safeId}`);
+
+            downloadItem.element.classList.remove('download-paused');
+            downloadItem.status = 'downloading';
+
+            if (statusText) {
+                statusText.textContent = 'Downloading...';
+            }
+
+            debugLog(`Download marked as resumed: ${downloadItem.title}`, 'info');
+        }
+
+        // Remove a download (cancelled)
+        function downloadCancelled(url) {
+            if (!downloadItems.has(url)) {
+                debugLog(`Cannot mark as cancelled: Item not found in queue: ${url}`, 'warning');
+                return;
+            }
+
+            const downloadItem = downloadItems.get(url);
+
+            // Remove the element from DOM
+            if (downloadItem.element && downloadItem.element.parentNode) {
+                downloadItem.element.parentNode.removeChild(downloadItem.element);
+            }
+
+            // Remove from our tracking map
+            downloadItems.delete(url);
+
+            // Update queue display
+            updateQueueDisplay();
+
+            debugLog(`Download removed from queue: ${downloadItem.title}`, 'warning');
+        }
+
+        // Initialize the app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            debugLog('DOM content loaded', 'info');
+            initApp();
         });
     </script>
 </body>
