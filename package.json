@@ -4,12 +4,14 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder build --win --publish never",
+    "publish": "electron-builder build --win --publish always"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A simple YouTube to MP3 downloader",
   "dependencies": {
     "@distube/ytpl": "^1.2.1",
     "electron": "^34.3.0",
@@ -19,5 +21,36 @@
   },
   "devDependencies": {
     "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.jasper.y2downloader",
+    "productName": "Jasper Y2 Downloader",
+    "copyright": "Copyright © 2025",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!dist",
+      "!build",
+      "!releases",
+      "!**/.{idea,git,cache,github,vscode}",
+      "!**/{.DS_Store,.git,.gitattributes,.gitignore,docs,LICENSE,.nvmrc,README.md}"
+    ]
   }
 }
